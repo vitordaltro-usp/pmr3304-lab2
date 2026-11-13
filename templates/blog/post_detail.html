@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} | Giro Diário{% endblock %}
+
+{% block content %}
+<article>
+    <h1>{{ post.title }}</h1>
+    <div class="meta">Publicado em {{ post.pub_date|date:"j \d\e F \d\e Y, H:i" }}</div>
+
+    {{ post.content|safe }}
+</article>
+
+<div class="actions">
+    <a class="button secondary" href="{% url 'blog:post_list' %}">Voltar</a>
+    <a class="button" href="{% url 'blog:post_update' post.pk %}">Editar</a>
+    <a class="button danger" href="{% url 'blog:post_delete' post.pk %}">Remover</a>
+</div>
+{% endblock %}

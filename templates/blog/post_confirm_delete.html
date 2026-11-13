@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Remover post | Giro Diário{% endblock %}
+
+{% block content %}
+<h1>Remover post</h1>
+
+<form method="post" class="box">
+    {% csrf_token %}
+    <p>Tem certeza de que deseja remover o post <strong>"{{ post.title }}"</strong>? Esta ação não pode ser desfeita.</p>
+    <button type="submit" class="danger">Sim, remover</button>
+    <a class="button secondary" href="{% url 'blog:post_detail' post.pk %}">Cancelar</a>
+</form>
+{% endblock %}

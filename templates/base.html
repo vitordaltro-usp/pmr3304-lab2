@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Giro Diário{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #222;
+            background: #f6f6f4;
+        }
+        header {
+            background: #1f3a5f;
+            color: #fff;
+        }
+        header .container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            padding-top: .8rem;
+            padding-bottom: .8rem;
+        }
+        header a { color: #fff; text-decoration: none; }
+        header .site-name { font-size: 1.4rem; font-weight: bold; }
+        header nav a { margin-left: 1rem; }
+        header nav a:hover { text-decoration: underline; }
+        .container { max-width: 760px; margin: 0 auto; padding: 0 1rem; }
+        main { padding: 1.5rem 0 3rem; }
+        a { color: #1f5fa8; }
+        h1, h2, h3 { line-height: 1.25; }
+        .meta { color: #666; font-size: .9rem; }
+        .post-list { list-style: none; padding: 0; }
+        .post-list li {
+            background: #fff;
+            border: 1px solid #e2e2de;
+            border-radius: 6px;
+            padding: .8rem 1rem;
+            margin-bottom: .8rem;
+        }
+        .post-list h2 { margin: 0 0 .2rem; font-size: 1.2rem; }
+        article, .box {
+            background: #fff;
+            border: 1px solid #e2e2de;
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+        }
+        .actions { margin-top: 1rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+        .button, button {
+            display: inline-block;
+            padding: .4rem .9rem;
+            border: 1px solid #1f5fa8;
+            border-radius: 4px;
+            background: #1f5fa8;
+            color: #fff;
+            font: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .button.secondary { background: #fff; color: #1f5fa8; }
+        .button.danger, button.danger { background: #b3261e; border-color: #b3261e; }
+        form p { margin: 0 0 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: .2rem; }
+        input[type=text], textarea, select {
+            width: 100%;
+            padding: .45rem;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font: inherit;
+        }
+        textarea { min-height: 14rem; font-family: ui-monospace, Consolas, monospace; }
+        .errorlist { color: #b3261e; padding-left: 1.2rem; }
+        .helptext { color: #666; font-size: .85rem; }
+        footer { color: #888; font-size: .85rem; text-align: center; padding-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a class="site-name" href="{% url 'blog:post_list' %}">Giro Diário</a>
+            <nav>
+                <a href="{% url 'blog:post_list' %}">Posts</a>
+                <a href="{% url 'blog:post_create' %}">Novo post</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="container">PMR3304 — Lab 2</footer>
+</body>
+</html>
