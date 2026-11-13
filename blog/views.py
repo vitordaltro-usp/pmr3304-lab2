@@ -1,53 +1,54 @@
-"""Views do blog — versão 2: funções, usando um Django form (PostForm).
+"""Views do blog — versão 3: classes genéricas do Django.
 
-O formulário valida os dados (campos obrigatórios, tamanho máximo do título)
-e, se houver erro, a página é exibida de novo com as mensagens.
+ListView, DetailView, CreateView, UpdateView e DeleteView já implementam
+o fluxo de CRUD; aqui só configuramos modelo, formulário, ordenação e
+para onde redirecionar após salvar ou remover.
 """
 
-from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 
 from .forms import PostForm
 from .models import Post
 
 
-def post_list(request):
-    posts = Post.objects.order_by('-pub_date')
-    return render(request, 'blog/post_list.html', {'post_list': posts})
+class PostListView(ListView):
+    model = Post
+    ordering = ['-pub_date']
+    # template padrão: blog/post_list.html; contexto: post_list
 
 
-def post_detail(request, pk):
-    # Responde com 404 se o post não existir.
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', {'post': post})
+class PostDetailView(DetailView):
+    # DetailView já responde com 404 se o post não existir.
+    model = Post
+    # template padrão: blog/post_detail.html; contexto: post
 
 
-def post_create(request):
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save()
-            return redirect('blog:post_detail', pk=post.pk)
-    else:
-        form = PostForm()
-    return render(request, 'blog/post_form.html', {'form': form})
+class PostCreateView(CreateView):
+    model = Post
+    form_class = PostForm
+    # template padrão: blog/post_form.html
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', kwargs={'pk': self.object.pk})
 
 
-def post_update(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        form = PostForm(request.POST, instance=post)
-        if form.is_valid():
-            form.save()
-            return redirect('blog:post_detail', pk=post.pk)
-    else:
-        form = PostForm(instance=post)
-    return render(request, 'blog/post_form.html', {'form': form, 'post': post})
+class PostUpdateView(UpdateView):
+    model = Post
+    form_class = PostForm
+    # template padrão: blog/post_form.html; contexto: post e form
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', kwargs={'pk': self.object.pk})
 
 
-def post_delete(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        post.delete()
-        return redirect('blog:post_list')
-    # GET mostra a página de confirmação; a remoção só acontece via POST.
-    return render(request, 'blog/post_confirm_delete.html', {'post': post})
+class PostDeleteView(DeleteView):
+    # GET mostra blog/post_confirm_delete.html; POST remove o post.
+    model = Post
+    success_url = reverse_lazy('blog:post_list')
