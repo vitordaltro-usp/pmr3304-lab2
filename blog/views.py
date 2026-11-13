@@ -6,6 +6,7 @@ para onde redirecionar após salvar ou remover.
 """
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -17,12 +18,15 @@ from django.views.generic import (
 )
 
 from .forms import CommentForm, PostForm
-from .models import Comment, Post
+from .models import Category, Comment, Post
 
 
 class PostListView(ListView):
     model = Post
     ordering = ['-pub_date']
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('categories')
     # template padrão: blog/post_list.html; contexto: post_list
 
 
@@ -83,3 +87,29 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('blog:post_detail', kwargs={'pk': self.post_obj.pk})
+
+
+class CategoryListView(ListView):
+    model = Category
+    # template padrão: blog/category_list.html; contexto: category_list
+
+    def get_queryset(self):
+        return Category.objects.annotate(num_posts=Count('posts')).order_by('name')
+
+
+class CategoryDetailView(DetailView):
+    """Página de uma categoria com todos os seus posts.
+
+    DetailView responde com 404 se a categoria não existir. O template da
+    listagem de posts (parte 1) é reutilizado, recebendo também a categoria.
+    """
+
+    model = Category
+    template_name = 'blog/post_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post_list'] = (
+            self.object.posts.order_by('-pub_date').prefetch_related('categories')
+        )
+        return context
