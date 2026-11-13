@@ -39,6 +39,14 @@ class PostCrudTests(TestCase):
         novo = Post.objects.get(title='Novo')
         self.assertRedirects(resp, reverse('blog:post_detail', args=[novo.pk]))
 
+    def test_criar_post_sem_titulo_mostra_erro(self):
+        resp = self.client.post(reverse('blog:post_create'), {
+            'title': '', 'content': '<p>Olá</p>',
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'errorlist')
+        self.assertEqual(Post.objects.count(), 1)
+
     def test_editar_post(self):
         url = reverse('blog:post_update', args=[self.post.pk])
         self.assertEqual(self.client.get(url).status_code, 200)

@@ -7,14 +7,7 @@
 
 <form method="post" class="box">
     {% csrf_token %}
-    <p>
-        <label for="id_title">Título</label>
-        <input type="text" id="id_title" name="title" value="{{ post.title|default:'' }}">
-    </p>
-    <p>
-        <label for="id_content">Conteúdo (HTML)</label>
-        <textarea id="id_content" name="content">{{ post.content|default:'' }}</textarea>
-    </p>
+    {{ form.as_p }}
     <button type="submit">Salvar</button>
     {% if post %}
     <a class="button secondary" href="{% url 'blog:post_detail' post.pk %}">Cancelar</a>
