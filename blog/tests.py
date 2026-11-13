@@ -4,7 +4,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Post
+from django.contrib.auth.models import User
+
+from .models import Comment, Post
 
 
 class PostCrudTests(TestCase):
@@ -62,3 +64,47 @@ class PostCrudTests(TestCase):
         resp = self.client.post(url)
         self.assertRedirects(resp, reverse('blog:post_list'))
         self.assertFalse(Post.objects.filter(pk=self.post.pk).exists())
+
+
+class CommentTests(TestCase):
+    def setUp(self):
+        self.post = Post.objects.create(title='Post', content='<p>x</p>')
+        self.user = User.objects.create_user('leitor_teste', password='senha-de-teste-123')
+        self.url = reverse('blog:comment_create', args=[self.post.pk])
+
+    def test_detalhe_tem_link_para_comentar(self):
+        resp = self.client.get(reverse('blog:post_detail', args=[self.post.pk]))
+        self.assertContains(resp, self.url)
+
+    def test_comentar_exige_login(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('login'), resp['Location'])
+
+    def test_comentar_post_inexistente_retorna_404(self):
+        self.client.force_login(self.user)
+        resp = self.client.get(reverse('blog:comment_create', args=[9999]))
+        self.assertEqual(resp.status_code, 404)
+
+    def test_criar_comentario_logado(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(self.url).status_code, 200)
+        resp = self.client.post(self.url, {'text': 'Ótima notícia!'})
+        self.assertRedirects(resp, reverse('blog:post_detail', args=[self.post.pk]))
+        comment = Comment.objects.get()
+        self.assertEqual(comment.author, self.user)
+        self.assertEqual(comment.post, self.post)
+
+    def test_comentarios_mais_recentes_primeiro(self):
+        Comment.objects.create(
+            post=self.post, author=self.user, text='antigo',
+            created_at=timezone.make_aware(datetime(2026, 11, 1, 9, 0)),
+        )
+        Comment.objects.create(
+            post=self.post, author=self.user, text='recente',
+            created_at=timezone.make_aware(datetime(2026, 11, 2, 9, 0)),
+        )
+        resp = self.client.get(reverse('blog:post_detail', args=[self.post.pk]))
+        html = resp.content.decode()
+        self.assertLess(html.index('recente'), html.index('antigo'))
+        self.assertContains(resp, '02/11/2026 09:00')

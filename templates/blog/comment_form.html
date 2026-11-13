@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Comentar | Giro Diário{% endblock %}
+
+{% block content %}
+<h1>Novo comentário</h1>
+<p>Em: <a href="{% url 'blog:post_detail' post.pk %}">{{ post.title }}</a></p>
+
+<form method="post" class="box">
+    {% csrf_token %}
+    <p class="meta">Comentando como <strong>{{ user.get_username }}</strong></p>
+    {{ form.as_p }}
+    <button type="submit">Publicar comentário</button>
+    <a class="button secondary" href="{% url 'blog:post_detail' post.pk %}">Cancelar</a>
+</form>
+{% endblock %}
