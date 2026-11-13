@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from django.contrib.auth.models import User
 
-from .models import Comment, Post
+from .models import Category, Comment, Post
 
 
 class PostCrudTests(TestCase):
@@ -16,6 +16,8 @@ class PostCrudTests(TestCase):
             content='<p>Conteúdo <strong>em HTML</strong></p>',
             pub_date=timezone.make_aware(datetime(2026, 11, 4, 10, 0)),
         )
+        self.cat = Category.objects.create(name='Tecnologia')
+        self.post.categories.add(self.cat)
 
     def test_listagem_mostra_titulo_com_link(self):
         resp = self.client.get(reverse('blog:post_list'))
@@ -36,7 +38,7 @@ class PostCrudTests(TestCase):
 
     def test_criar_post(self):
         resp = self.client.post(reverse('blog:post_create'), {
-            'title': 'Novo', 'content': '<p>Olá</p>',
+            'title': 'Novo', 'content': '<p>Olá</p>', 'categories': [self.cat.pk],
         })
         novo = Post.objects.get(title='Novo')
         self.assertRedirects(resp, reverse('blog:post_detail', args=[novo.pk]))
@@ -52,7 +54,7 @@ class PostCrudTests(TestCase):
     def test_editar_post(self):
         url = reverse('blog:post_update', args=[self.post.pk])
         self.assertEqual(self.client.get(url).status_code, 200)
-        self.client.post(url, {'title': 'Editado', 'content': '<p>x</p>'})
+        self.client.post(url, {'title': 'Editado', 'content': '<p>x</p>', 'categories': [self.cat.pk]})
         self.post.refresh_from_db()
         self.assertEqual(self.post.title, 'Editado')
 
@@ -108,3 +110,44 @@ class CommentTests(TestCase):
         html = resp.content.decode()
         self.assertLess(html.index('recente'), html.index('antigo'))
         self.assertContains(resp, '02/11/2026 09:00')
+
+
+class CategoryTests(TestCase):
+    def setUp(self):
+        self.tec = Category.objects.create(name='Tecnologia', description='Notícias de tecnologia')
+        self.cie = Category.objects.create(name='Ciência')
+        self.p1 = Post.objects.create(title='Post em duas', content='<p>a</p>')
+        self.p1.categories.add(self.tec, self.cie)
+        self.p2 = Post.objects.create(title='Só ciência', content='<p>b</p>')
+        self.p2.categories.add(self.cie)
+
+    def test_header_tem_link_para_categorias(self):
+        resp = self.client.get(reverse('blog:post_list'))
+        self.assertContains(resp, reverse('blog:category_list'))
+
+    def test_listagem_de_categorias(self):
+        resp = self.client.get(reverse('blog:category_list'))
+        self.assertContains(resp, 'Tecnologia')
+        self.assertContains(resp, reverse('blog:category_detail', args=[self.cie.pk]))
+
+    def test_categoria_lista_seus_posts_reutilizando_template(self):
+        resp = self.client.get(reverse('blog:category_detail', args=[self.tec.pk]))
+        self.assertTemplateUsed(resp, 'blog/post_list.html')
+        self.assertContains(resp, 'Categoria: Tecnologia')
+        self.assertContains(resp, 'Notícias de tecnologia')
+        self.assertContains(resp, 'Post em duas')
+        self.assertNotContains(resp, 'Só ciência')
+
+    def test_categoria_inexistente_retorna_404(self):
+        resp = self.client.get(reverse('blog:category_detail', args=[9999]))
+        self.assertEqual(resp.status_code, 404)
+
+    def test_detalhe_do_post_mostra_categorias_com_link(self):
+        resp = self.client.get(reverse('blog:post_detail', args=[self.p1.pk]))
+        self.assertContains(resp, reverse('blog:category_detail', args=[self.tec.pk]))
+        self.assertContains(resp, reverse('blog:category_detail', args=[self.cie.pk]))
+
+    def test_post_sem_categoria_e_recusado_no_formulario(self):
+        resp = self.client.post(reverse('blog:post_create'), {'title': 'X', 'content': '<p>x</p>'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertFalse(Post.objects.filter(title='X').exists())

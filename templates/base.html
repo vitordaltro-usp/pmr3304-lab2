@@ -36,6 +36,9 @@
         }
         header form.logout button:hover { text-decoration: underline; }
         .comments { margin-top: 2rem; }
+        ul.checkboxes, form div > div { list-style: none; padding-left: 0; }
+        form input[type=checkbox] { margin-right: .4rem; }
+        form label:has(input[type=checkbox]) { font-weight: normal; display: inline; }
         .comment {
             background: #fff;
             border-left: 3px solid #1f5fa8;
@@ -101,6 +104,7 @@
             <a class="site-name" href="{% url 'blog:post_list' %}">Giro Diário</a>
             <nav>
                 <a href="{% url 'blog:post_list' %}">Posts</a>
+                <a href="{% url 'blog:category_list' %}">Categorias</a>
                 <a href="{% url 'blog:post_create' %}">Novo post</a>
                 {% if user.is_authenticated %}
                 <form class="logout" method="post" action="{% url 'logout' %}">
