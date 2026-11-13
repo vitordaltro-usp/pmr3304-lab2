@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Entrar | Giro Diário{% endblock %}
+
+{% block content %}
+<h1>Entrar</h1>
+
+<form method="post" class="box">
+    {% csrf_token %}
+    {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+    <p>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+    </p>
+    <p>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+    </p>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit">Entrar</button>
+</form>
+<p class="meta">Os usuários são criados pelo administrador do site.</p>
+{% endblock %}

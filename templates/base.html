@@ -30,6 +30,22 @@
         header .site-name { font-size: 1.4rem; font-weight: bold; }
         header nav a { margin-left: 1rem; }
         header nav a:hover { text-decoration: underline; }
+        header form.logout { display: inline; margin-left: 1rem; }
+        header form.logout button {
+            background: none; border: 0; padding: 0; color: #fff; cursor: pointer;
+        }
+        header form.logout button:hover { text-decoration: underline; }
+        .comments { margin-top: 2rem; }
+        .comment {
+            background: #fff;
+            border-left: 3px solid #1f5fa8;
+            padding: .5rem 1rem;
+            margin-bottom: .8rem;
+        }
+        .comment p { margin: .3rem 0 0; }
+        input[type=password] {
+            width: 100%; padding: .45rem; border: 1px solid #bbb; border-radius: 4px; font: inherit;
+        }
         .container { max-width: 760px; margin: 0 auto; padding: 0 1rem; }
         main { padding: 1.5rem 0 3rem; }
         a { color: #1f5fa8; }
@@ -86,6 +102,14 @@
             <nav>
                 <a href="{% url 'blog:post_list' %}">Posts</a>
                 <a href="{% url 'blog:post_create' %}">Novo post</a>
+                {% if user.is_authenticated %}
+                <form class="logout" method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Sair ({{ user.get_username }})</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.path|urlencode }}">Entrar</a>
+                {% endif %}
             </nav>
         </div>
     </header>
