@@ -1,0 +1,150 @@
+[
+  {
+    "model": "blog.category",
+    "pk": 1,
+    "fields": {
+      "name": "Tecnologia",
+      "description": "Celulares, software, segurança digital e inovação."
+    }
+  },
+  {
+    "model": "blog.category",
+    "pk": 2,
+    "fields": {
+      "name": "Ciência",
+      "description": "Pesquisas, descobertas e prêmios científicos."
+    }
+  },
+  {
+    "model": "blog.category",
+    "pk": 3,
+    "fields": {
+      "name": "Cotidiano",
+      "description": "Assuntos que fazem parte do dia a dia."
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 101,
+    "fields": {
+      "username": "marina",
+      "first_name": "Marina",
+      "password": "!",
+      "is_active": true,
+      "date_joined": "2026-10-01T09:00:00-03:00"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 102,
+    "fields": {
+      "username": "carlos",
+      "first_name": "Carlos",
+      "password": "!",
+      "is_active": true,
+      "date_joined": "2026-10-01T09:00:00-03:00"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 103,
+    "fields": {
+      "username": "ana",
+      "first_name": "Ana",
+      "password": "!",
+      "is_active": true,
+      "date_joined": "2026-10-01T09:00:00-03:00"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 104,
+    "fields": {
+      "username": "pedro",
+      "first_name": "Pedro",
+      "password": "!",
+      "is_active": true,
+      "date_joined": "2026-10-01T09:00:00-03:00"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 1,
+    "fields": {
+      "title": "Samsung divulga boletim de segurança de novembro com 20 falhas críticas",
+      "content": "<p>A Samsung publicou o boletim de segurança de novembro de 2026 para os celulares da linha Galaxy. É nesse tipo de documento que a fabricante detalha quais problemas de segurança estão sendo corrigidos nos seus aparelhos.</p>\n<h3>O que o boletim traz</h3>\n<ul>\n<li>20 vulnerabilidades do Android classificadas como críticas;</li>\n<li>outras correções em componentes e aplicativos da própria Samsung.</li>\n</ul>\n<p>Fonte: <a href=\"https://www.oficinadanet.com.br/noticias/73874-noticias-do-dia-quarta-feira-4-novembro-2026\">Oficina da Net</a></p>",
+      "pub_date": "2026-11-04T10:00:00-03:00",
+      "categories": [1, 3]
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 2,
+    "fields": {
+      "title": "Nobel de Física 2026 vai para o cientista que transformou o gelo da Antártida em detector de partículas",
+      "content": "<p>Em 6 de outubro de 2026, a Real Academia Sueca de Ciências anunciou que o Nobel de Física deste ano vai para o físico belga Francis Halzen, de 82 anos, professor da Universidade de Wisconsin-Madison. O prêmio reconhece suas contribuições decisivas ao Observatório de Neutrinos IceCube e a descoberta de neutrinos de alta energia de origem astrofísica.</p>\n<h3>Um detector feito de gelo</h3>\n<p>O IceCube fica no Polo Sul, na Antártida, e usa cerca de 1 km³ de gelo como detector. Esse volume todo é necessário porque a maioria dos neutrinos atravessa o equipamento sem interagir com nada: quanto maior a quantidade de gelo observada, maiores as chances de registrar algum.</p>\n<p>Com o observatório, os pesquisadores identificaram neutrinos cósmicos de alta energia e mostraram que parte deles vem de fora do Sistema Solar. Por isso, o trabalho é apontado como a base de um novo tipo de astronomia, capaz de revelar fenômenos cósmicos até então desconhecidos.</p>\n<p>Fontes: <a href=\"https://www.gazetasp.com.br/cotidiano/premio-nobel-de-fisica-2026-vai-para-cientista-que-transformou-gelo-da-antartida-em-detector-de-particulas-cosmicas/\">Gazeta SP</a> e <a href=\"https://expansion.mx/mundo/2026/10/06/nobel-fisica-francis-halzen-neutrinos-icecube\">Expansión</a></p>",
+      "pub_date": "2026-10-06T20:00:00-03:00",
+      "categories": [2, 1]
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 3,
+    "fields": {
+      "title": "Novembro tem três feriados nacionais e duas chances de emenda",
+      "content": "<p>Novembro de 2026 tem três feriados nacionais. Para quem não trabalha aos sábados e domingos, dois deles caem em dias que permitem prolongar o fim de semana.</p>\n<h3>As duas emendas do mês</h3>\n<ul>\n<li><strong>Finados</strong> cai em uma segunda-feira;</li>\n<li><strong>Consciência Negra</strong> cai em uma sexta-feira.</li>\n</ul>\n<p>Nos dois casos, o feriado fica colado ao fim de semana, que ganha um dia a mais de descanso.</p>\n<p>Fonte: <a href=\"https://www.portalaz.com.br/noticia/geral/99368/novembro-tera-tres-feriados-e-duas-chances-de-prolongar-o-fim-de-semana/\">Portal AZ</a></p>",
+      "pub_date": "2026-10-27T15:00:00-03:00",
+      "categories": [3]
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 1,
+    "fields": {
+      "post": 1,
+      "author": 101,
+      "text": "Conferi aqui e a atualização ainda não apareceu no meu celular. Vou ficar de olho.",
+      "created_at": "2026-11-04T12:15:00-03:00"
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 2,
+    "fields": {
+      "post": 1,
+      "author": 102,
+      "text": "Vinte falhas críticas é bastante coisa. Melhor instalar assim que chegar.",
+      "created_at": "2026-11-04T14:40:00-03:00"
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 3,
+    "fields": {
+      "post": 1,
+      "author": 103,
+      "text": "Seria útil uma matéria explicando como ver a versão do patch de segurança no aparelho.",
+      "created_at": "2026-11-05T09:05:00-03:00"
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 4,
+    "fields": {
+      "post": 2,
+      "author": 104,
+      "text": "Que ideia incrível usar o próprio gelo da Antártida como detector.",
+      "created_at": "2026-10-06T21:30:00-03:00"
+    }
+  },
+  {
+    "model": "blog.comment",
+    "pk": 5,
+    "fields": {
+      "post": 2,
+      "author": 101,
+      "text": "Não sabia que a maioria dos neutrinos atravessa tudo sem interagir. Explicação bem clara!",
+      "created_at": "2026-10-07T08:10:00-03:00"
+    }
+  }
+]
