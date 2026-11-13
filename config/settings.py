@@ -13,24 +13,41 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def env_list(name, default):
+    """Lê uma variável de ambiente com valores separados por vírgula."""
+    return [item.strip() for item in os.environ.get(name, default).split(',') if item.strip()]
+
+
 # Configurações sensíveis vêm de variáveis de ambiente.
 # Os valores padrão abaixo servem apenas para desenvolvimento local.
-SECRET_KEY = os.environ.get(
-    'SECRET_KEY',
-    'django-insecure-chave-apenas-para-desenvolvimento-local',
-)
+DEV_SECRET_KEY = 'django-insecure-chave-apenas-para-desenvolvimento-local'
+SECRET_KEY = os.environ.get('SECRET_KEY', DEV_SECRET_KEY)
 
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-    if host.strip()
-]
+if not DEBUG and SECRET_KEY == DEV_SECRET_KEY:
+    raise ImproperlyConfigured('Defina a variável de ambiente SECRET_KEY em produção.')
+
+# '.onrender.com' aceita qualquer subdomínio do Render (ex.: meu-app.onrender.com).
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1,.onrender.com')
+
+# Formulários enviados pelo domínio do Render (HTTPS) passam na verificação CSRF.
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', 'https://*.onrender.com')
+
+# O Render atende em HTTPS e repassa a requisição ao gunicorn por HTTP,
+# avisando o protocolo original neste cabeçalho.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -121,16 +138,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+# O CSS do site fica inline em templates/base.html, então o site não depende
+# de arquivos estáticos. Sem whitenoise, o admin aparece sem estilo em produção.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# O site não envia e-mails; o backend de console só faz sentido em desenvolvimento.
+if DEBUG:
+    MAILERS = {
+        'default': {
+            'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        },
+    }
 
 
 # Autenticação (login nativo do Django, usado para comentar)
